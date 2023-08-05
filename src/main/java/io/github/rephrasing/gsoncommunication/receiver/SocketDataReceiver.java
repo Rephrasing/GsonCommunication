@@ -28,4 +28,11 @@ public abstract class SocketDataReceiver {
     }
 
     abstract public void onReceive(JsonElement element);
+
+    @SneakyThrows
+    public void closeConnection() {
+        in.close();
+        socket.close();
+        server.close();
+    }
 }
