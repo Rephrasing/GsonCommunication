@@ -29,7 +29,7 @@ public abstract class SocketDataReceiver {
         this.socket = server.accept();
         this.in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         String message;
-        while (socket.isClosed()) {
+        while (!socket.isClosed()) {
             message = in.readUTF();
             onReceive(gson.fromJson(message, JsonElement.class));
         }
