@@ -9,25 +9,28 @@ import java.io.*;
 
 public abstract class SocketDataReceiver {
 
-    private final Socket socket;
+    private Socket socket;
     private final ServerSocket server;
-    private final DataInputStream in;
+    private DataInputStream in;
     private final Gson gson = new Gson();
 
     @SneakyThrows
     public SocketDataReceiver(int port) {
         this.server = new ServerSocket(port);
+    }
+
+    abstract public void onReceive(JsonElement element);
+
+    @SneakyThrows
+    public void connect() {
         this.socket = server.accept();
         this.in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-
         String message;
         while (socket.isClosed()) {
             message = in.readUTF();
             onReceive(gson.fromJson(message, JsonElement.class));
         }
     }
-
-    abstract public void onReceive(JsonElement element);
 
     @SneakyThrows
     public void closeConnection() {
