@@ -2,6 +2,7 @@ package io.github.rephrasing.gsoncommunication.receiver;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import lombok.SneakyThrows;
 
 import java.net.*;
 import java.io.*;
@@ -23,27 +24,21 @@ public abstract class SocketDataReceiver {
 
     abstract public void onReceive(JsonElement element);
 
+    @SneakyThrows
     public void connect() {
-        try {
-            this.socket = server.accept();
-            this.in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            String message;
-            while (socket.isClosed()) {
-                message = in.readUTF();
-                onReceive(gson.fromJson(message, JsonElement.class));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        this.socket = server.accept();
+        this.in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+        String message;
+        while (socket.isClosed()) {
+            message = in.readUTF();
+            onReceive(gson.fromJson(message, JsonElement.class));
         }
     }
 
+    @SneakyThrows
     public void closeConnection() {
-        try {
-            in.close();
-            socket.close();
-            server.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        in.close();
+        socket.close();
+        server.close();
     }
 }
