@@ -2,7 +2,6 @@ package io.github.rephrasing.gsoncommunication.receiver;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import lombok.SneakyThrows;
 
 import java.net.*;
 import java.io.*;
@@ -14,28 +13,37 @@ public abstract class SocketDataReceiver {
     private DataInputStream in;
     private final Gson gson = new Gson();
 
-    @SneakyThrows
     public SocketDataReceiver(int port) {
-        this.server = new ServerSocket(port);
+        try {
+            this.server = new ServerSocket(port);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     abstract public void onReceive(JsonElement element);
 
-    @SneakyThrows
     public void connect() {
-        this.socket = server.accept();
-        this.in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-        String message;
-        while (socket.isClosed()) {
-            message = in.readUTF();
-            onReceive(gson.fromJson(message, JsonElement.class));
+        try {
+            this.socket = server.accept();
+            this.in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+            String message;
+            while (socket.isClosed()) {
+                message = in.readUTF();
+                onReceive(gson.fromJson(message, JsonElement.class));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    @SneakyThrows
     public void closeConnection() {
-        in.close();
-        socket.close();
-        server.close();
+        try {
+            in.close();
+            socket.close();
+            server.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
