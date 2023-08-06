@@ -2,6 +2,7 @@ package io.github.rephrasing.gsoncommunication.sender;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import lombok.SneakyThrows;
 
 import java.io.*;
 import java.net.*;
@@ -13,35 +14,27 @@ public class SocketDataSender {
     private DataOutputStream out;
     private final Gson gson = new Gson();
 
+    @SneakyThrows
     public SocketDataSender(String address, int port) {
         this.address = address;
         this.port = port;
     }
 
+    @SneakyThrows
     public void send(JsonElement element) {
-        String toSend = gson.toJson(element);
-        try {
-            out.writeUTF(toSend);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        String json = gson.toJson(element);
+        out.writeUTF(json);
     }
 
+    @SneakyThrows
     public void connect() {
-        try {
-            this.socket = new Socket(address, port);
-            this.out = new DataOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.socket = new Socket(address, port);
+        this.out = new DataOutputStream(socket.getOutputStream());
     }
 
+    @SneakyThrows
     public void closeConnection() {
-        try {
-            out.close();
-            socket.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        out.close();
+        socket.close();
     }
 }
