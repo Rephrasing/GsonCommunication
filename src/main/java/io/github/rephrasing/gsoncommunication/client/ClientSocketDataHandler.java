@@ -32,8 +32,8 @@ public abstract class ClientSocketDataHandler {
 
     @SneakyThrows
     public void connect(int timeOut) {
-        socket.setSoTimeout(timeOut);
         this.socket = new Socket(address, port);
+        socket.setSoTimeout(timeOut);
         this.out = new DataOutputStream(socket.getOutputStream());
         this.in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         String message;
