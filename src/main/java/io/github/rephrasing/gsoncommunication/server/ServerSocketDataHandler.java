@@ -30,7 +30,8 @@ public abstract class ServerSocketDataHandler {
     }
 
     @SneakyThrows
-    public void connect() {
+    public void connect(int timeOut) {
+        socket.setSoTimeout(timeOut);
         this.socket = server.accept();
         this.in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         this.out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
