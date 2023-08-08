@@ -11,8 +11,8 @@ public abstract class ClientSocketDataHandler {
     private final String address;
     private final int port;
     private Socket socket;
-    private DataOutputStream out;
-    private DataInputStream in;
+    private PrintWriter out;
+    private BufferedReader in;
     private final Gson gson = new Gson();
 
     @SneakyThrows
@@ -26,20 +26,18 @@ public abstract class ClientSocketDataHandler {
     @SneakyThrows
     public void send(JsonElement element) {
         String json = gson.toJson(element);
-        out.writeUTF(json);
-        out.flush();
+        out.write(json);
     }
 
     @SneakyThrows
     public void connect(int timeOut) {
         this.socket = new Socket(address, port);
         socket.setSoTimeout(timeOut);
-        this.out = new DataOutputStream(socket.getOutputStream());
-        out.flush();
-        this.in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+        this.out = new PrintWriter(socket.getOutputStream(), true);
+        this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String message;
-        while (!socket.isClosed()) {
-            message = in.readUTF();
+        while (in.ready() && !socket.isClosed()) {
+            message = in.readLine();
             onReceive(gson.fromJson(message, JsonElement.class));
         }
     }
