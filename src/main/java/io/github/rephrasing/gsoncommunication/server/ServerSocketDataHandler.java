@@ -18,6 +18,7 @@ public abstract class ServerSocketDataHandler {
     @SneakyThrows
     public ServerSocketDataHandler(int port) {
         this.server = new ServerSocket(port);
+        System.out.println("Listening on port " + port);
     }
 
     abstract public void onReceive(JsonElement element);
@@ -34,8 +35,10 @@ public abstract class ServerSocketDataHandler {
         socket.setSoTimeout(timeOut);
         this.out = new PrintWriter(socket.getOutputStream(), true);
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        System.out.println("Connected by " + socket.getInetAddress().getHostAddress());
         String message;
-        while (in.ready() && !socket.isClosed()) {
+        while (!socket.isClosed()) {
+            if (!in.ready()) continue;
             message = in.readLine();
             onReceive(gson.fromJson(message, JsonElement.class));
         }
