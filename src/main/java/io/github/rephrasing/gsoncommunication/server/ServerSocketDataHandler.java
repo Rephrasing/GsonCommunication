@@ -33,8 +33,9 @@ public abstract class ServerSocketDataHandler {
     public void connect(int timeOut) {
         this.socket = server.accept();
         socket.setSoTimeout(timeOut);
-        this.in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         this.out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+        out.flush();
+        this.in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         String message;
         while (!socket.isClosed()) {
             message = in.readUTF();

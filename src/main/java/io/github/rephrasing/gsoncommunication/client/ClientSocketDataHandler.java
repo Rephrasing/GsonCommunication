@@ -35,6 +35,7 @@ public abstract class ClientSocketDataHandler {
         this.socket = new Socket(address, port);
         socket.setSoTimeout(timeOut);
         this.out = new DataOutputStream(socket.getOutputStream());
+        out.flush();
         this.in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         String message;
         while (!socket.isClosed()) {
